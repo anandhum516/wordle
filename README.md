@@ -1,1 +1,1 @@
-# wordle.github.io
+# wordle
