@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Game</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('word.avif'); /* Background image */
+            background-size: cover;
+            background-repeat: no-repeat;
+            color: #333;
+        }
+
+        .container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.9); /* Background color with transparency */
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 400px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #007BFF;
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            border: 2px solid #007BFF;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 12px 24px;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result {
+            margin-top: 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        #word {
+            font-size: 2rem;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wordle Game</h1>
+        <div id="word"></div>
+        <input type="text" id="guess" maxlength="5" placeholder="Enter your guess">
+        <button onclick="checkGuess()">Check</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const wordList = ['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape', 'honeydew', 'kiwi', 'lemon'];
+
+        let secretWord = getRandomWord(wordList);
+        let remainingAttempts = 6;
+        let guessedLetters = [];
+
+        document.getElementById('word').textContent = '_'.repeat(secretWord.length);
+
+        function getRandomWord(wordList) {
+            const randomIndex = Math.floor(Math.random() * wordList.length);
+            return wordList[randomIndex];
+        }
+
+        function checkGuess() {
+            const guess = document.getElementById('guess').value.toLowerCase();
+
+            if (guess.length !== 5 || !/^[a-z]+$/.test(guess)) {
+                alert('Please enter a 5-letter word using only alphabets.');
+                return;
+            }
+
+            if (guessedLetters.includes(guess)) {
+                alert('You already guessed that word.');
+                return;
+            }
+
+            guessedLetters.push(guess);
+
+            let result = '';
+            let newWord = '';
+
+            for (let i = 0; i < secretWord.length; i++) {
+                if (secretWord[i] === guess[i]) {
+                    result += '🟩';
+                    newWord += guess[i];
+                } else if (secretWord.includes(guess[i])) {
+                    result += '🟨';
+                    newWord += '_';
+                } else {
+                    result += '🟥';
+                    newWord += '_';
+                }
+            }
+
+            document.getElementById('word').textContent = newWord;
+            document.getElementById('result').textContent = result;
+
+            if (newWord === secretWord) {
+                document.getElementById('result').textContent = 'Congratulations! You guessed the word!';
+                document.getElementById('guess').disabled = true;
+            } else {
+                remainingAttempts--;
+
+                if (remainingAttempts === 0) {
+                    document.getElementById('result').textContent = `You ran out of attempts. The word was ${secretWord}.`;
+                    document.getElementById('guess').disabled = true;
+                } else {
+                    document.getElementById('result').textContent += ` Remaining attempts: ${remainingAttempts}`;
+                }
+            }
+
+            document.getElementById('guess').value = '';
+        }
+    </script>
+</body>
+</html>
